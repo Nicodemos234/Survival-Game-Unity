@@ -1,23 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerFarmer : MonoBehaviour
 {
     public GameObject[] farms;
+    public TextMeshProUGUI inventoryText;
     private Transform objTransform;
     // Start is called before the first frame update
     void Start()
     {
-        farms = GameObject.FindGameObjectsWithTag("Farm");
         objTransform = gameObject.GetComponent<Transform>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void HitTree()
     {
-        if (Input.GetMouseButtonDown(0)){
-            for (int i = 0; i < farms.Length; i++)
+        farms = GameObject.FindGameObjectsWithTag("Farm");
+        for (int i = 0; i < farms.Length; i++)
             {
                 if(farms[i]) {
                     float distance = Vector3.Distance(farms[i].transform.position, objTransform.position);
@@ -27,6 +27,7 @@ public class PlayerFarmer : MonoBehaviour
                         if(tree.life <= 0) {
                             Inventory inventory = gameObject.GetComponent<Inventory>();
                             inventory.items.Add(tree.itemName);
+                            inventoryText.SetText(inventoryText.text + ' ' + tree.itemName);
                             Destroy(farms[i]);
                             farms[i] = null;
                         }
@@ -34,6 +35,15 @@ public class PlayerFarmer : MonoBehaviour
                     }
                 }
             }
-        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+            InvokeRepeating("HitTree", 0, 0.5f); 
+          if (Input.GetMouseButtonUp(0))
+            CancelInvoke();
+            
     }
 }
